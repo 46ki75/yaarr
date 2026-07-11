@@ -1,0 +1,18 @@
+{
+  "name": "prompt-evaluation-claude-code",
+  "version": "1.1.0",
+  "description": "Eval-driven prompt refinement that runs entirely inside Claude Code via the Agent/Task tooling, plus a /capture-eval-case skill that turns observed agent failures into regression eval cases.",
+  "author": {
+    "name": "Ikuma Yamashita",
+    "email": "me@ikuma.cloud"
+  },
+  "homepage": "https://github.com/46ki75/claude-plugins/tree/main/plugins/prompt-evaluation-claude-code",
+  "repository": "https://github.com/46ki75/claude-plugins",
+  "license": "MIT",
+  "keywords": [
+    "skill",
+    "prompt-engineering",
+    "evals",
+    "claude-code"
+  ]
+}

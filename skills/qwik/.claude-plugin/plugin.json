@@ -1,0 +1,19 @@
+{
+  "name": "qwik",
+  "version": "1.0.0",
+  "description": "Expert guidance for the Qwik framework (v1 and v2) and its meta-framework (Qwik City / Qwik Router).",
+  "author": {
+    "name": "Ikuma Yamashita",
+    "email": "me@ikuma.cloud"
+  },
+  "homepage": "https://github.com/46ki75/claude-plugins/tree/main/plugins/qwik",
+  "repository": "https://github.com/46ki75/claude-plugins",
+  "license": "MIT",
+  "keywords": [
+    "skill",
+    "qwik",
+    "qwik-city",
+    "frontend",
+    "resumability"
+  ]
+}

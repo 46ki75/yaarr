@@ -1,0 +1,26 @@
+{
+  "description": "Surfaces Claude Code permission-prompt Notifications and Stop events as Windows toast notifications from WSL2.",
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "permission_prompt|elicitation_dialog",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/notify.sh Notification"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/notify.sh Stop"
+          }
+        ]
+      }
+    ]
+  }
+}

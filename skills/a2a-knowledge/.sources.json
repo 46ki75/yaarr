@@ -1,0 +1,10 @@
+{
+  "skill": "a2a-knowledge",
+  "sources": [
+    {
+      "repo": "submodules/A2A",
+      "synced": "69dd57cb7ec8f83b7d93855d166869a72f01a1eb",
+      "paths": ["docs", "specification", "CHANGELOG.md"]
+    }
+  ]
+}

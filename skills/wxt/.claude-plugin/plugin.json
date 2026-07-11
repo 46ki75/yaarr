@@ -1,0 +1,19 @@
+{
+  "name": "wxt",
+  "version": "1.0.0",
+  "description": "Expert guidance for building browser extensions with WXT — project setup, file-based routing, and APIs.",
+  "author": {
+    "name": "Ikuma Yamashita",
+    "email": "me@ikuma.cloud"
+  },
+  "homepage": "https://github.com/46ki75/claude-plugins/tree/main/plugins/wxt",
+  "repository": "https://github.com/46ki75/claude-plugins",
+  "license": "MIT",
+  "keywords": [
+    "skill",
+    "wxt",
+    "browser-extension",
+    "webextension",
+    "frontend"
+  ]
+}

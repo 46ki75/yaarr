@@ -1,0 +1,21 @@
+[submodule "submodules/toasty"]
+	path = submodules/toasty
+	url = https://github.com/46ki75/toasty
+[submodule "submodules/A2A"]
+	path = submodules/A2A
+	url = https://github.com/a2aproject/A2A.git
+[submodule "submodules/mcp-rust-sdk"]
+	path = submodules/mcp-rust-sdk
+	url = https://github.com/modelcontextprotocol/rust-sdk
+[submodule "submodules/modelcontextprotocol"]
+	path = submodules/modelcontextprotocol
+	url = https://github.com/modelcontextprotocol/modelcontextprotocol.git
+[submodule "submodules/A2UI"]
+	path = submodules/A2UI
+	url = https://github.com/google/A2UI
+[submodule "submodules/ag-ui"]
+	path = submodules/ag-ui
+	url = https://github.com/ag-ui-protocol/ag-ui
+[submodule "submodules/lefthook"]
+	path = submodules/lefthook
+	url = https://github.com/evilmartians/lefthook

@@ -1,0 +1,21 @@
+{
+  "name": "claude-md-management-reloaded",
+  "version": "1.1.0",
+  "description": "Maintain project memory across CLAUDE.md and .claude/rules/: scaffold a hybrid CLAUDE.md + path-scoped rules from scratch (a rules-aware /init), audit and improve existing files, split a bloated CLAUDE.md into path-scoped rules, capture session learnings to the right scope, and a hook that warns when CLAUDE.md grows oversized.",
+  "author": {
+    "name": "Ikuma Yamashita",
+    "email": "me@ikuma.cloud"
+  },
+  "homepage": "https://github.com/46ki75/claude-plugins/tree/main/plugins/claude-md-management-reloaded",
+  "repository": "https://github.com/46ki75/claude-plugins",
+  "license": "MIT",
+  "keywords": [
+    "skill",
+    "hook",
+    "claude-md",
+    "init",
+    "memory",
+    "rules",
+    "documentation"
+  ]
+}

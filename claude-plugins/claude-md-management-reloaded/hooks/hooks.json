@@ -1,0 +1,16 @@
+{
+  "description": "Warn when a CLAUDE.md memory file grows past the recommended line budget and nudge toward path-scoped .claude/rules/ files.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/check-claude-md-size.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

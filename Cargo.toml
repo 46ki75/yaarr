@@ -1,0 +1,62 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/skill-parser",
+    "crates/skill-validator",
+    "crates/skill-archiver",
+    "crates/skill-cli",
+    "crates/mcp-server",
+    "crates/toasty-app",
+]
+
+[workspace.lints.rust]
+missing_docs = "warn"
+
+[workspace.package]
+edition = "2024"
+license = "MIT"
+authors = ["Ikuma Yamashita"]
+repository = "https://github.com/46ki75/claude-plugins"
+version = "0.1.0"
+rust-version = "1.85"
+
+[workspace.dependencies]
+skill-parser = { path = "crates/skill-parser" }
+skill-validator = { path = "crates/skill-validator" }
+skill-archiver = { path = "crates/skill-archiver" }
+
+tokio = { version = "1", features = [
+    "rt-multi-thread",
+    "macros",
+    "fs",
+    "process",
+    "io-std",
+    "signal",
+    "sync",
+    "time",
+] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+serde = { version = "1", features = ["derive"] }
+thiserror = "2"
+zip = { version = "7", default-features = false, features = ["deflate"] }
+gray_matter = { version = "0.3", default-features = false, features = ["yaml"] }
+octocrab = "0.54"
+walkdir = "2"
+clap = { version = "4", features = ["derive"] }
+anyhow = "1"
+serde_json = "1"
+schemars = "1"
+rmcp = { version = "2.0", features = [
+    "server",
+    "client",
+    "macros",
+    "transport-io",
+    "transport-streamable-http-server",
+    "schemars",
+    "elicitation",
+] }
+axum = "0.8"
+tokio-util = "0.7"
+toasty = { version = "0.7", default-features = false }
+uuid = { version = "1", features = ["v4", "serde"] }

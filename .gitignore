@@ -1,0 +1,21 @@
+notes/*
+
+!.gitkeep
+
+# Node.js
+node_modules/
+
+# Rust
+target/
+
+# Python
+__pycache__/
+
+# Build artifacts produced by skill_uploader
+dist/
+
+# Transient skill-creator eval workspaces (not shipped)
+*-workspace/
+
+# Claude Code runtime state
+.claude/scheduled_tasks.lock

@@ -1,0 +1,29 @@
+[package]
+name = "skill-cli"
+description = "CLI that validates, archives, and publishes Agent Skills to GitHub Releases."
+readme = "README.md"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+skill-parser = { workspace = true }
+skill-validator = { workspace = true }
+skill-archiver = { workspace = true }
+
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+clap = { workspace = true }
+octocrab = { workspace = true }
+walkdir = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }

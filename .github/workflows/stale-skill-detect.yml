@@ -1,0 +1,83 @@
+name: Detect Stale Skills
+
+# Runs on Dependabot submodule-bump PRs. Read-only: it diffs each knowledge
+# skill's recorded `synced` SHA (in its `.sources.json`) against the new
+# submodule pin and, if any skill drifted, comments on the PR and uploads a
+# drift report. The privileged refresh runs separately via `workflow_run`
+# (see stale-skill-refresh.yml), because Dependabot-triggered runs get a
+# read-only token and no Actions secrets.
+
+on:
+  pull_request:
+    paths:
+      - ".gitmodules"
+      - "submodules/*"
+      - "submodules/**"
+  workflow_dispatch:
+
+# Dependabot `pull_request` runs default to a read-only token, but the
+# `permissions:` key can still widen it (it does not unlock Actions secrets).
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  detect:
+    name: Detect drift
+    # Only act on Dependabot's submodule bumps (or a manual dispatch).
+    if: github.actor == 'dependabot[bot]' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          submodules: recursive
+
+      - name: Deepen submodule history
+        # The skill's `synced` baseline is older than the PR's pin, so the
+        # shallow submodule checkout must be deepened for `git diff` to resolve
+        # both endpoints.
+        run: git submodule foreach 'git fetch --unshallow 2>/dev/null || git fetch'
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Detect drift
+        id: drift
+        run: |
+          mkdir -p drift
+          cargo run --release -p skill-cli -- sources --json > drift/report.json
+          cat drift/report.json
+          echo "stale=$(jq -r '.stale' drift/report.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Record PR number
+        if: github.event_name == 'pull_request'
+        run: echo "${{ github.event.pull_request.number }}" > drift/pr.txt
+
+      - name: Upload drift report
+        uses: actions/upload-artifact@v7
+        with:
+          name: drift-report
+          path: drift/
+          retention-days: 7
+
+      - name: Comment on PR
+        if: steps.drift.outputs.stale == 'true' && github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "### 🔄 Knowledge skills may be stale"
+            echo
+            echo "This submodule bump changes upstream files that the following skills are derived from:"
+            echo
+            jq -r '.skills[] | "- **\(.skill)** — " + ([.sources[] | select((.changed | length) > 0) | "\(.changed | length) file(s) in `\(.repo)` (`\(.synced[0:7])`→`\(.current[0:7])`)"] | join(", "))' drift/report.json
+            echo
+            echo "An automated refresh PR will be opened by the **Refresh Stale Skills** workflow. Review it alongside this bump."
+          } > comment.md
+          gh pr comment "${{ github.event.pull_request.number }}" --body-file comment.md

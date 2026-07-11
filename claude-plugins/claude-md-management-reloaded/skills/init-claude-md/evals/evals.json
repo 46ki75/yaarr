@@ -1,0 +1,68 @@
+{
+  "skill_name": "init-claude-md",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I have a repo with a Rust backend in `crates/api/` (axum, tests in `crates/api/tests/`), a React + TypeScript frontend in `web/src/` (Vite), and a `justfile` exposing `just build`, `just test`, and `just lint`. There is no CLAUDE.md and no .claude/rules/ yet. Set up project memory for this repo.",
+      "expected_output": "A hybrid scaffold: a lean root CLAUDE.md (with the /init prefix, the just commands, and big-picture architecture) plus at least one path-scoped .claude/rules/*.md for an area like the frontend or the api, presented as a tree + diffs for approval before writing.",
+      "files": [],
+      "assertions": [
+        "Proposes a HYBRID layout: a root CLAUDE.md PLUS at least one .claude/rules/*.md file, not a single monolithic CLAUDE.md",
+        "The proposed root CLAUDE.md begins with the exact prefix line '# CLAUDE.md' immediately followed by 'This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.'",
+        "The root CLAUDE.md stays lean: repo-wide essentials only (the just build/test/lint commands and big-picture architecture), and does not duplicate the area-specific content that was moved into rules",
+        "At least one proposed .claude/rules/ file carries a paths: frontmatter glob targeting a real area such as web/src or crates/api",
+        "Does not write or apply any file before showing the proposed tree and diffs and asking the user for approval"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "My repo keeps React components in `src/components/` (`.tsx`) where every component must use CSS modules and have an aria-label, and an API layer in `src/api/` (`.ts`) where every endpoint validates input with zod and returns the shared error envelope. No CLAUDE.md or rules exist yet. Scaffold the memory.",
+      "expected_output": "A lean CLAUDE.md plus two path-scoped rules: .claude/rules/frontend.md (paths: src/components/**/*.tsx) holding the component conventions, and .claude/rules/api.md (paths: src/api/**/*.ts) holding the endpoint conventions; globs verified against the described files.",
+      "files": [],
+      "assertions": [
+        "Routes the component-specific conventions (CSS modules, aria-label) into a path-scoped rule rather than the root CLAUDE.md",
+        "The frontend rule's paths: glob targets the component files, e.g. 'src/components/**/*.tsx' or an equivalent that matches the described .tsx files",
+        "The API conventions land in a separate path-scoped rule with a glob such as 'src/api/**/*.ts'",
+        "States that each paths: glob must be (or has been) verified to match real files before finalizing",
+        "The root CLAUDE.md does not restate the per-area conventions that were moved into the rules"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "My repo already has a 250-line CLAUDE.md that mixes build commands, top-level architecture, frontend styling rules, API conventions, and deployment steps all in one file. There are no .claude/rules/ yet. Run your init on it.",
+      "expected_output": "Detects the existing CLAUDE.md and, instead of recreating it, proposes keeping repo-wide essentials in CLAUDE.md while extracting the area-specific sections (frontend styling, API, deployment) into path-scoped rules, noting the file is over the ~200-line budget.",
+      "files": [],
+      "assertions": [
+        "Detects the existing CLAUDE.md and does NOT overwrite or regenerate it from scratch",
+        "Switches to an improvement/split proposal: repo-wide essentials stay in CLAUDE.md while area-specific sections (frontend styling, API, deployment) are extracted into path-scoped rules",
+        "Preserves the substance of the existing content rather than discarding it, and does not leave content duplicated in both CLAUDE.md and a new rule",
+        "Notes that the file exceeds the ~200-line budget and that splitting into rules is the fix, or defers to the claude-md-improver skill for a full audit"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Set up CLAUDE.md for a small single-package Python CLI: it runs with `uv run mytool`, tests with `pytest`, and lints with `ruff`. Keep it tight.",
+      "expected_output": "A single lean CLAUDE.md (with the /init prefix and the real uv/pytest/ruff commands plus a one-line architecture note), no invented sections, no generic best-practice filler, and an explicit note that no path-scoped rules are warranted for a project this small.",
+      "files": [],
+      "assertions": [
+        "Does not include generic best-practice filler such as 'write unit tests for all new code', 'provide helpful error messages', or 'never commit secrets / API keys'",
+        "Does not invent sections like 'Tips for Development', 'Common Development Tasks', or 'Support and Documentation' that were not derived from the repo",
+        "Does not enumerate every file or directory that is trivially discoverable",
+        "Includes the real project commands (uv run mytool, pytest, ruff) and only big-picture architecture",
+        "Recognizes that a single-area project may need only a lean CLAUDE.md with no rules, and says so rather than forcing a split"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Set up project memory for my Node service. package.json defines three test scripts — `test` (jest), `test:watch`, and `test:ci` (jest with coverage for CI) — and I haven't told you which one is the canonical command to document. There is no CLAUDE.md yet.",
+      "expected_output": "Recognizes that the canonical test command is ambiguous, asks one focused question (via AskUserQuestion) offering the candidate scripts with a sensible default rather than silently guessing, and proceeds to scaffold once the command is chosen or defaulted.",
+      "files": [],
+      "assertions": [
+        "Recognizes that which test command is canonical cannot be determined from the repo alone and does not silently pick one as fact",
+        "Asks the user a focused question (e.g. via AskUserQuestion) listing the candidate test scripts rather than guessing",
+        "Keeps the questioning light: a single batched round with a sensible default, not an open-ended interview",
+        "Still produces the hybrid scaffold (lean CLAUDE.md plus any warranted rules) after the command is chosen or defaulted, without blocking indefinitely"
+      ]
+    }
+  ]
+}

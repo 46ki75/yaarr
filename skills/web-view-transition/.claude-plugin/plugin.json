@@ -1,0 +1,19 @@
+{
+  "name": "web-view-transition",
+  "version": "1.0.0",
+  "description": "Expert guidance for implementing the View Transition API — same-document (SPA) and cross-document transitions.",
+  "author": {
+    "name": "Ikuma Yamashita",
+    "email": "me@ikuma.cloud"
+  },
+  "homepage": "https://github.com/46ki75/claude-plugins/tree/main/plugins/web-view-transition",
+  "repository": "https://github.com/46ki75/claude-plugins",
+  "license": "MIT",
+  "keywords": [
+    "skill",
+    "view-transition",
+    "spa",
+    "animation",
+    "frontend"
+  ]
+}

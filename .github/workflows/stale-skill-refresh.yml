@@ -1,0 +1,164 @@
+name: Refresh Stale Skills
+
+# Privileged counterpart to stale-skill-detect.yml. Runs via `workflow_run`
+# after the detect workflow finishes on a Dependabot submodule PR. A
+# `workflow_run` run is NOT considered Dependabot-triggered, so it gets a
+# writable token and access to Actions secrets (incl. CLAUDE_CODE_OAUTH_TOKEN).
+#
+# It checks out the Dependabot PR head (so submodules sit at the new pins),
+# re-detects drift, then lets Claude refresh each stale skill — updating
+# content where the upstream change is material, bumping `metadata.version`,
+# and advancing the `synced` SHA in each `.sources.json` — and opens a review
+# PR with the result. Can also be run manually against the default branch.
+
+on:
+  workflow_run:
+    workflows: ["Detect Stale Skills"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh-stale-skills
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Refresh skills
+    # On workflow_run, only proceed if the detect run succeeded.
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve source ref
+        id: src
+        env:
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+        run: |
+          echo "ref=${HEAD_BRANCH:-${{ github.ref_name }}}" >> "$GITHUB_OUTPUT"
+          echo "pr=${PR_NUMBER:-}" >> "$GITHUB_OUTPUT"
+
+      - name: Clone Repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.src.outputs.ref }}
+          fetch-depth: 0
+          submodules: recursive
+          # A PAT lets the opened PR trigger CI; falls back to GITHUB_TOKEN
+          # (a PR opened with GITHUB_TOKEN will not start other workflows).
+          token: ${{ secrets.GH_PAT || github.token }}
+
+      - name: Deepen submodule history
+        run: git submodule foreach 'git fetch --unshallow 2>/dev/null || git fetch'
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Detect drift
+        id: drift
+        run: |
+          cargo run --release -p skill-cli -- sources --json | tee ./.drift-report.json
+          echo "stale=$(jq -r '.stale' ./.drift-report.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Install pnpm
+        if: steps.drift.outputs.stale == 'true'
+        uses: pnpm/action-setup@v6
+        with:
+          version: 9
+
+      - name: Use Node.js
+        if: steps.drift.outputs.stale == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24.x"
+          cache: "pnpm"
+
+      - name: Install Node dependencies
+        if: steps.drift.outputs.stale == 'true'
+        run: pnpm i
+
+      - name: Refresh skills with Claude
+        if: steps.drift.outputs.stale == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: '--allowedTools "Edit,MultiEdit,Write,Read,Bash,Glob,Grep"'
+          prompt: |
+            The drift report `./.drift-report.json` (repo root) lists Agent
+            Skills whose upstream protocol source (tracked as a git submodule)
+            has advanced past the commit the skill was written against. Refresh
+            the stale skills.
+
+            Read the report first: `cat ./.drift-report.json`
+
+            For each skill and each of its `sources`:
+
+            1. Inspect exactly what changed upstream:
+                   git -C <repo> diff <synced> <current> -- <changed paths>
+               (the `repo`, `synced`, `current`, and `changed` fields are in the
+               report).
+            2. Judge whether the change is MATERIAL to the skill's guidance —
+               new/renamed/removed APIs, message types, fields, lifecycle or
+               protocol-semantics changes, new spec versions, SDK signature
+               changes, etc. IGNORE cosmetic churn: CSS, images, typo fixes,
+               tutorial prose, link rot, formatting.
+            3. If material: update the skill's `SKILL.md` and/or files under its
+               `references/` to match the new upstream. Keep edits minimal,
+               accurate, and in the existing voice/structure of the skill. Then
+               bump `metadata.version` in the SKILL.md frontmatter (patch for
+               small corrections, minor for notable additions).
+            4. Whether or not content changed, advance that source's `synced`
+               SHA in the skill's `.sources.json` to the `current` SHA from the
+               report. This moves the baseline forward so the same diff is not
+               re-flagged on the next bump.
+
+            Follow the repository's CLAUDE.md conventions (skill frontmatter
+            rules, American English, etc.). When done, validate your work by
+            running both checks that CI runs:
+
+                pnpm run lint
+                cargo run --quiet --package skill-cli -- check
+
+            and fix any failures. Do NOT edit submodules, and do NOT commit or
+            push — leave your changes in the working tree.
+
+      - name: Clean up report
+        if: steps.drift.outputs.stale == 'true'
+        run: rm -f ./.drift-report.json
+
+      - name: Restore submodule pins
+        if: steps.drift.outputs.stale == 'true'
+        # Keep the PR to the submodule bump + skill refresh only: ensure the
+        # deepened-history fetch left no submodule working trees dirty.
+        run: git submodule update --init --recursive 2>/dev/null || true
+
+      - name: Open refresh PR
+        if: steps.drift.outputs.stale == 'true'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GH_PAT || github.token }}
+          branch: auto/refresh-skills-${{ github.run_id }}
+          base: main
+          commit-message: "docs(skills): refresh ai-protocols skills for upstream changes"
+          author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+          title: "docs(skills): refresh stale ai-protocols skills"
+          body: |
+            Automated refresh: an upstream protocol submodule advanced and the
+            derived knowledge skill(s) were updated to match.
+
+            - Generated by the **Refresh Stale Skills** workflow.
+            - Each affected skill's `.sources.json` `synced` SHA was advanced to
+              the new pin; `metadata.version` was bumped where content changed.
+            ${{ steps.src.outputs.pr && format('- Supersedes the submodule bump in #{0} — merge this PR and close that one.', steps.src.outputs.pr) || '' }}
+
+            Review the content edits carefully before merging.
+          labels: |
+            ai-protocols
+            automated
+          delete-branch: true
