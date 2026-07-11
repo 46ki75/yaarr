@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "prompt-evaluation-claude-code",
-      "source": "./plugins/prompt-evaluation-claude-code",
+      "source": "./claude-plugins/prompt-evaluation-claude-code",
       "description": "Eval-driven prompt refinement that runs entirely inside Claude Code via the Agent/Task tooling, plus a /capture-eval-case skill that turns observed agent failures into regression eval cases.",
       "version": "1.1.0",
       "keywords": [
@@ -20,7 +20,7 @@
     },
     {
       "name": "search-agents",
-      "source": "./plugins/search-agents",
+      "source": "./claude-plugins/search-agents",
       "description": "Three research subagents — web-search (general web), aws-search (AWS Knowledge MCP), and microsoft-search (Microsoft Learn MCP) — that classify stable vs. fluid and return cited, freshness-marked answers.",
       "version": "1.1.0",
       "keywords": [
@@ -36,7 +36,7 @@
     },
     {
       "name": "wsl-notification",
-      "source": "./plugins/wsl-notification",
+      "source": "./claude-plugins/wsl-notification",
       "description": "Sends Claude Code permission-prompt Notifications and Stop events as Windows toast notifications from WSL2 via powershell.exe.",
       "version": "0.4.0",
       "keywords": [
@@ -50,7 +50,7 @@
     },
     {
       "name": "claude-md-management-reloaded",
-      "source": "./plugins/claude-md-management-reloaded",
+      "source": "./claude-plugins/claude-md-management-reloaded",
       "description": "Maintain project memory across CLAUDE.md and .claude/rules/: scaffold a hybrid CLAUDE.md + path-scoped rules from scratch (a rules-aware /init), audit and improve existing files, split a bloated CLAUDE.md into path-scoped rules, capture session learnings to the right scope, and a hook that warns when CLAUDE.md grows oversized.",
       "version": "1.1.0",
       "keywords": [
