@@ -1,0 +1,10 @@
+{
+  "skill": "acp-knowledge",
+  "sources": [
+    {
+      "repo": "submodules/agent-client-protocol",
+      "synced": "71f3a052169a23ddfa77f5c4f3120c0f860e33ca",
+      "paths": ["docs/get-started", "docs/protocol", "docs/libraries", "schema", "CHANGELOG.md"]
+    }
+  ]
+}

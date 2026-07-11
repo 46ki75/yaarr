@@ -19,3 +19,6 @@
 [submodule "submodules/lefthook"]
 	path = submodules/lefthook
 	url = https://github.com/evilmartians/lefthook
+[submodule "submodules/agent-client-protocol"]
+	path = submodules/agent-client-protocol
+	url = https://github.com/zed-industries/agent-client-protocol

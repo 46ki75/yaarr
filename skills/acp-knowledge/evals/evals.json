@@ -1,0 +1,47 @@
+{
+  "skill_name": "acp-knowledge",
+  "evals": [
+    {
+      "id": 0,
+      "name": "client-cancellation",
+      "prompt": "I'm adding stop/cancel support to my ACP client (an editor extension written in TypeScript). When the user hits the stop button mid-turn, what exactly does the protocol require me to do, and what should I expect back from the agent? I want to make sure I don't show a scary error when the user cancels.",
+      "expected_output": "Accurate v1 cancellation flow: send the session/cancel notification, preemptively mark unfinished tool calls cancelled, respond to pending session/request_permission with the cancelled outcome, expect the session/prompt response with stopReason cancelled (not an error), and keep accepting session/update notifications until that response arrives.",
+      "files": [],
+      "assertions": [
+        "Says to send the session/cancel notification (a notification, not a request expecting a response)",
+        "Says the client MUST respond to any pending session/request_permission requests with the 'cancelled' outcome",
+        "Says the client SHOULD preemptively mark unfinished tool calls from the current turn as cancelled",
+        "Says the agent responds to the original session/prompt with stopReason 'cancelled' — a normal response, not a JSON-RPC error — which is exactly why no error should be shown to the user",
+        "Mentions the client should still accept session/update notifications that arrive after sending session/cancel"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "v1-to-v2-migration",
+      "prompt": "our acp agent currently targets protocol v1 and uses fs/read_text_file, fs/write_text_file and the terminal/* methods heavily. what would it take to also support v2? list the breaking changes that hit us specifically and how we're supposed to replace the removed APIs",
+      "expected_output": "Correct v2 migration guidance: fs/* and terminal/* are removed in v2 in favor of client-provided MCP servers; prompt lifecycle redesign (session/prompt response acknowledges acceptance, stop reason arrives via state_update); authenticate/logout renamed to auth/login and auth/logout; session/load replaced by session/resume with replayFrom; support both versions side by side via per-connection version negotiation.",
+      "files": [],
+      "assertions": [
+        "States that fs/read_text_file, fs/write_text_file, and all terminal/* methods are removed in v2",
+        "States the replacement is client-provided MCP servers (the client exposes file/terminal functionality as MCP tools)",
+        "Mentions the prompt lifecycle redesign: the session/prompt response only acknowledges acceptance, and progress/completion (including the stop reason) arrive via state_update session updates",
+        "Mentions authenticate → auth/login and/or logout → auth/logout renames, or session/load being replaced by session/resume with replayFrom",
+        "Recommends supporting v1 and v2 side by side via per-connection version negotiation (not dropping v1), and/or notes v2 is still labeled draft"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "mcp-passthrough",
+      "prompt": "How does an ACP editor hand its user-configured MCP servers over to the agent? Which MCP transports can I assume the agent supports, and how do I check before sending an HTTP server config? Show the JSON for a session/new request with one stdio server and one HTTP server.",
+      "expected_output": "Explains that MCP server configs are passed in the mcpServers array of session/new (and load/resume), stdio is the mandatory baseline transport, HTTP/SSE require checking agentCapabilities.mcpCapabilities in the initialize response, and shows a correct session/new JSON with cwd plus stdio (name/command/args/env) and HTTP (type, name, url, headers) entries.",
+      "files": [],
+      "assertions": [
+        "Explains MCP server configs are passed in the mcpServers array of session/new (and session/load / session/resume)",
+        "States stdio is the transport every agent MUST support (the safe baseline assumption)",
+        "States HTTP support must be checked via mcpCapabilities.http in the agentCapabilities of the initialize response before sending an HTTP config",
+        "Shows a session/new JSON with an absolute cwd plus a stdio server entry using name/command/args (env as name/value pairs)",
+        "The HTTP server entry in the JSON uses type: \"http\" with name, url, and headers fields"
+      ]
+    }
+  ]
+}
