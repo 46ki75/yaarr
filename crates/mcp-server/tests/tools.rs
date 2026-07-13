@@ -60,6 +60,28 @@ async fn list_tools_returns_the_advertised_set() -> anyhow::Result<()> {
         ],
     );
 
+    for (name, idempotent, open_world) in [
+        ("ping", true, false),
+        ("slow_count", true, false),
+        ("ask_llm", false, true),
+        ("greet_user", false, false),
+        ("list_workspace_roots", true, false),
+    ] {
+        let tool = listed
+            .tools
+            .iter()
+            .find(|tool| tool.name == name)
+            .expect("advertised tool should be present");
+        let annotations = tool
+            .annotations
+            .as_ref()
+            .expect("every advertised tool should declare behavioral annotations");
+        assert_eq!(annotations.read_only_hint, Some(true), "{name}");
+        assert_eq!(annotations.destructive_hint, Some(false), "{name}");
+        assert_eq!(annotations.idempotent_hint, Some(idempotent), "{name}");
+        assert_eq!(annotations.open_world_hint, Some(open_world), "{name}");
+    }
+
     client_service.cancel().await?;
     let _ = server_handle.await;
     Ok(())
