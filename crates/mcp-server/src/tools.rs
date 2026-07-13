@@ -53,7 +53,15 @@ rmcp::elicit_safe!(UserNameInput);
 #[tool_router(vis = "pub(crate)")]
 impl Server {
     /// Example tool. Replace with real tools.
-    #[tool(description = "Health-check tool. Returns 'pong'.")]
+    #[tool(
+        description = "Health-check tool. Returns 'pong'.",
+        annotations(
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = false,
+        )
+    )]
     async fn ping(&self) -> Result<CallToolResult, McpError> {
         Ok(CallToolResult::success(vec![ContentBlock::text("pong")]))
     }
@@ -64,7 +72,13 @@ impl Server {
     /// uses the `OperationProcessor` on `self.processor`.
     #[tool(
         description = "Count up to `target` slowly (100ms per tick). Supports task-based invocation.",
-        execution(task_support = "optional")
+        execution(task_support = "optional"),
+        annotations(
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = false,
+        )
     )]
     async fn slow_count(
         &self,
@@ -91,7 +105,15 @@ impl Server {
         deprecated,
         reason = "SEP-2577 deprecates sampling; kept as an example"
     )]
-    #[tool(description = "Ask the client's LLM a question via sampling.")]
+    #[tool(
+        description = "Ask the client's LLM a question via sampling.",
+        annotations(
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = false,
+            open_world_hint = true,
+        )
+    )]
     async fn ask_llm(
         &self,
         Parameters(args): Parameters<AskLlmArgs>,
@@ -136,7 +158,15 @@ impl Server {
     /// them as `CallToolResult::success` with an informative message so the
     /// client can render them naturally. Only genuine protocol/parse
     /// failures escalate to `internal_error`.
-    #[tool(description = "Ask the user for their name, then greet them.")]
+    #[tool(
+        description = "Ask the user for their name, then greet them.",
+        annotations(
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = false,
+            open_world_hint = false,
+        )
+    )]
     async fn greet_user(
         &self,
         ctx: RequestContext<RoleServer>,
@@ -183,7 +213,15 @@ impl Server {
     /// Roots is deprecated by SEP-2577 as of rmcp 2.0 but remains part of
     /// the protocol; this example keeps demonstrating it.
     #[allow(deprecated, reason = "SEP-2577 deprecates roots; kept as an example")]
-    #[tool(description = "List the workspace roots the client has exposed.")]
+    #[tool(
+        description = "List the workspace roots the client has exposed.",
+        annotations(
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = false,
+        )
+    )]
     async fn list_workspace_roots(
         &self,
         ctx: RequestContext<RoleServer>,
