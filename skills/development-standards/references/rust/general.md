@@ -62,7 +62,7 @@ thiserror = { workspace = true }
 # rust-toolchain.toml
 [toolchain]
 channel = "1.85"
-components = ["rustfmt", "clippy"]
+components = ["rustfmt", "clippy", "rust-analyzer"]
 profile = "minimal"
 ```
 
@@ -198,16 +198,16 @@ Pulls in the `async-trait` crate. Reasonable when a trait has many methods and t
 
 ### Choosing
 
-| Situation                                                                            | Default       |
-| ------------------------------------------------------------------------------------ | ------------- |
-| ≤ ~3 methods on the trait                                                            | Boxed futures |
-| Many methods, evolving rapidly                                                       | `async_trait` |
-| Trait surface is part of a published library API                                     | Boxed futures (no proc-macro dep in the public ABI) |
-| You need fine control over the future's `Send`/`'a` bounds at specific call sites    | Boxed futures |
+| Situation                                                                         | Default                                             |
+| --------------------------------------------------------------------------------- | --------------------------------------------------- |
+| ≤ ~3 methods on the trait                                                         | Boxed futures                                       |
+| Many methods, evolving rapidly                                                    | `async_trait`                                       |
+| Trait surface is part of a published library API                                  | Boxed futures (no proc-macro dep in the public ABI) |
+| You need fine control over the future's `Send`/`'a` bounds at specific call sites | Boxed futures                                       |
 
 Don't mix the two within one trait — pick one and apply it to every method, so impl blocks and call sites stay grep-able.
 
-In practice, across audited org repos, `#[async_trait]` is the more common choice on Repository/UseCase traits — boxed futures are a minority pattern used by only one crate. Treat the table above as the standard for *new* code, but don't be surprised to find `#[async_trait]` as the norm in an existing codebase; that's not drift to fix opportunistically.
+In practice, across audited org repos, `#[async_trait]` is the more common choice on Repository/UseCase traits — boxed futures are a minority pattern used by only one crate. Treat the table above as the standard for _new_ code, but don't be surprised to find `#[async_trait]` as the norm in an existing codebase; that's not drift to fix opportunistically.
 
 ### Native `async fn` in traits
 
