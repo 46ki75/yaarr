@@ -2,6 +2,10 @@
 name: solidjs
 description: Build, debug, refactor, review, and test applications across the Solid ecosystem. Use this skill whenever a task involves SolidJS, SolidStart, @solidjs/router, @solidjs/meta, signals, stores, fine-grained reactivity, Solid file routes, server functions, actions, metadata, SSR, or hydration, even when the user only says "Solid app" or asks to migrate React-style TSX. It prevents React mental-model mistakes and guides selection of current Solid APIs.
 compatibility: Requires a Solid project or permission to create one, plus the project's Node.js package manager for verification. Current documentation access is useful when installed package versions differ from these references.
+license: MIT
+metadata:
+  author: "Ikuma Yamashita"
+  version: "1.0.0"
 ---
 
 # Solid Ecosystem Engineering
