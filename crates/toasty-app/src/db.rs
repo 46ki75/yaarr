@@ -4,7 +4,7 @@
 //! and the binary in lockstep: when a new model is added, only this
 //! function needs updating.
 
-use crate::{embedded::Address, models::*};
+use crate::models::*;
 
 /// Default connection string used when `TOASTY_CONNECTION_URL` is unset.
 /// Picks a fresh in-memory SQLite database per call.
@@ -21,7 +21,7 @@ pub async fn connect() -> toasty::Result<toasty::Db> {
         std::env::var("TOASTY_CONNECTION_URL").unwrap_or_else(|_| DEFAULT_CONNECTION_URL.into());
 
     let db = toasty::Db::builder()
-        .models(toasty::models!(User, Todo, Profile, Article, Address))
+        .models(toasty::models!(User, Todo, Profile, Article))
         .connect(&url)
         .await?;
 
