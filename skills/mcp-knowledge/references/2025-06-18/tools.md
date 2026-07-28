@@ -289,6 +289,10 @@ Embedded resources support the same [Resource annotations](/specification/2025-0
 
 For backwards compatibility, a tool that returns structured content SHOULD also return the serialized JSON in a TextContent block.
 
+> **Note:**
+> `structuredContent` is server-produced result data and is unrelated to LLM
+> "structured outputs" (schema-constrained model generation).
+
 #### Output Schema
 
 Tools may also provide an output schema for validation of structured results.

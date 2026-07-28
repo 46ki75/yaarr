@@ -3,7 +3,7 @@
   "sources": [
     {
       "repo": "submodules/modelcontextprotocol",
-      "synced": "dc105208d6c5737c010ed3b6ff50ca19746317c1",
+      "synced": "5f5440bb26a62e2cf3440b92da5a667efa03b267",
       "paths": ["docs", "schema"]
     },
     {
