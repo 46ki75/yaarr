@@ -1,8 +1,9 @@
 ---
 name: development-standards
 description: >
-  Org-internal engineering standards. Invoke when scaffolding a repo,
-  auditing one, setting up CI, or configuring `Cargo.toml`,
+  Org-internal engineering standards. Invoke for repo scaffolding and audits,
+  executable quality gates, validation or generation scripts, CI, bug
+  investigation or fixes, regression tests, or configuration of `Cargo.toml`,
   `rust-toolchain.toml`, `justfile`, `.editorconfig`,
   `.markdownlint-cli2.yaml`, `tsconfig.json`, `package.json`,
   `pnpm-lock.yaml`, `bunfig.toml`, `pyproject.toml`, `uv.lock`,
@@ -14,12 +15,11 @@ description: >
   published-crate conventions, async-graphql), Python (uv workspaces,
   `src` layout, ruff, pyright strict, pytest tiers), TypeScript/Node
   (tsconfig, multi-context configs, npm scripts), Terraform (workspaces,
-  backend, naming). Only Bun is a stub — invoke anyway so the user
-  defines the convention rather than getting an improvised one.
+  backend, naming). Bun is a stub; invoke anyway rather than improvising.
 license: MIT
 metadata:
   author: "Ikuma Yamashita"
-  version: "0.6.0"
+  version: "0.7.0"
 ---
 
 # Development Standards
@@ -27,10 +27,30 @@ metadata:
 Org-internal engineering standards. This file is a **router** — load the
 reference that matches the task, not the whole tree.
 
+## Enforcement principle
+
+Prefer executable enforcement over prose. When a standard can be expressed
+through a formatter, linter, type checker, compiler setting, schema, or test,
+configure that tool and enforce it in CI rather than relying on contributors
+or AI agents to remember the rule.
+
+Keep written guidance for tool selection, rationale, exceptions, and standards
+that cannot be checked mechanically. Avoid restating individual tool rules in
+prose; the checked-in configuration is the authoritative specification. Use
+editor and pre-commit integrations for fast feedback, but keep CI authoritative.
+When a recurring workflow or quality requirement still exists only as a
+checklist, look for the smallest reliable script, test, or validator that can
+make it executable. Read `references/general/executable-quality.md` when
+designing or auditing those mechanisms, and whenever investigating or fixing a
+bug.
+
 ## Routing
 
 ### Cross-cutting — `references/general/`
 
+- `executable-quality.md`: Quality gates, validation and generation scripts,
+  bug investigation and fixes, contract tests, generated-file or metadata
+  drift, safe automation, and evaluation of stochastic systems.
 - `git-repository.md`: New repo setup, `.editorconfig`,
   `markdownlint-cli2`, pnpm, lefthook git hooks, Claude Code `PostToolUse`
   integration, and editor recommendations.
@@ -97,6 +117,7 @@ laundering a one-off decision into apparent policy. Instead:
 - General programming or library tutorials — use an available language- or
   library-specific skill (for example `mcp-knowledge` or `ag-ui-knowledge`)
   or upstream docs.
-- Debugging business logic.
+- General questions about business logic that do not involve investigating or
+  fixing a defect.
 - Reviewing changes that do not touch tooling, project layout, or the
   architectural seams covered in `references/`.

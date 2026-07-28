@@ -1,0 +1,40 @@
+{
+  "skill_name": "development-standards",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Fix a bug in this repository's parser: whitespace-only project names are currently accepted, but they must be rejected like empty names. Work through the fix end-to-end and run the relevant tests.",
+      "expected_output": "The agent adds and runs a focused regression test that reproduces the whitespace-only-name bug before changing the parser, confirms that the test fails for the expected reason, implements the smallest fix, reruns the test successfully, and keeps the test in the suite.",
+      "files": [],
+      "assertions": [
+        "Adds the automated regression test before changing the parser implementation.",
+        "Runs the new test before the fix and confirms that it fails because whitespace-only names are accepted, not because of an unrelated setup error.",
+        "Changes the parser only after demonstrating the failing test, then reruns the same test and confirms that it passes.",
+        "Keeps the regression test in the test suite after the fix."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Fix the release pipeline bug where an invalid manifest causes the script to delete the existing dist directory before validation fails. The last known-good artifacts must survive invalid input.",
+      "expected_output": "The agent treats pipeline configuration and scripts as part of the implementation: it first adds and runs a failing regression test proving that invalid input deletes the existing output, then changes the pipeline and confirms that the same test passes while preserving the prior artifacts.",
+      "files": [],
+      "assertions": [
+        "Adds a regression test for validate-before-mutate behavior before changing the pipeline script or configuration responsible for the defect.",
+        "Runs the new test and confirms the expected destructive behavior before implementing the fix.",
+        "Does not interpret 'test first' as applying only to production source code.",
+        "Reruns the same test after the fix and confirms that invalid input preserves the last known-good output."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Investigate why checkout totals sometimes differ by one cent, but do not change any files or implement a fix yet. I only want a diagnosis and a proposed next step.",
+      "expected_output": "The agent investigates without modifying files. It may propose a focused failing regression test as the first implementation step, but it does not claim that a test must be written or run during this diagnosis-only request.",
+      "files": [],
+      "assertions": [
+        "Does not modify implementation or test files during the investigation-only request.",
+        "Distinguishes diagnosis from implementing a bug fix.",
+        "Proposes writing and confirming a failing regression test before any later implementation change."
+      ]
+    }
+  ]
+}
