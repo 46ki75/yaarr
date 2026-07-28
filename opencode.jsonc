@@ -3,6 +3,9 @@
     "reference": {
         "solidjs": {
             "repository": "https://github.com/solidjs/solid-docs"
+        },
+        "modelcontextprotocol": {
+            "repository": "modelcontextprotocol/modelcontextprotocol"
         }
     }
 }
