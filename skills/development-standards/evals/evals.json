@@ -35,6 +35,32 @@
         "Distinguishes diagnosis from implementing a bug fix.",
         "Proposes writing and confirming a failing regression test before any later implementation change."
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "Set up ESLint for a new pnpm TypeScript package that uses Vitest. Apply our development standard, include the package scripts, and explain any warning-level policy.",
+      "expected_output": "The agent creates one composable flat ESLint configuration with typed project-service linting, the complete org strict baseline and linter options, and the Vitest recommended preset scoped to test files. It exposes ESLint as a package-level leaf command and integrates that leaf through the globally owned quality-gate policy rather than redefining gate composition in the ESLint config. It keeps the baseline unsafe-boundary and typed-test migration rules visible as warnings and declares every imported lint plugin in the package that owns the config.",
+      "files": [],
+      "assertions": [
+        "Uses @eslint/js recommended and typescript-eslint recommendedTypeChecked with parserOptions.projectService enabled and tsconfigRootDir set.",
+        "Applies the complete strictRules and strictLinterOptions baseline rather than selecting only convenient rules or weakening errors.",
+        "Extends @vitest/eslint-plugin's recommended flat config only for Vitest test globs, applies the typed-test await-thenable warning, and composes it with the baseline in one valid flat-config export.",
+        "Declares ESLint, @eslint/js, typescript-eslint, and @vitest/eslint-plugin as development dependencies in the package that imports them.",
+        "Exposes eslint . as a package-level lint leaf, follows the global quality-gate and Node package-script policies for composition, and explains that warning-level rules are visible migration debt rather than permission for new findings."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Audit this TypeScript monorepo's ESLint setup against our development standard. It uses recommendedTypeChecked in the app package, but scripts and tests are not linted, Vitest has no plugin, three unsafe rules are disabled globally, and CI only checks one of four packages. Do not edit files yet.",
+      "expected_output": "The agent reports the coverage and enforcement gaps without editing files: maintained TypeScript scripts and tests are outside lint scope, Vitest recommended rules are absent, required warning-level migration rules were disabled instead of kept visible, and CI is not authoritative for every package. It proposes a shared strict config and a package-by-package check path while preserving the distinction between errors and migration warnings.",
+      "files": [],
+      "assertions": [
+        "Does not modify files during the audit-only request.",
+        "Identifies source-only lint scope as a gap when maintained scripts and tests are built or executed.",
+        "Identifies the missing Vitest recommended preset and requires it to be scoped to test files.",
+        "Rejects globally disabling baseline unsafe-boundary warnings merely to obtain clean output.",
+        "Identifies incomplete package CI coverage and recommends one shared baseline consumed by every independently linted package."
+      ]
     }
   ]
 }

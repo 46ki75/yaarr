@@ -33,7 +33,7 @@ failure:
   "scripts": {
     "fmt": "prettier --write ./src",
     "fmt.check": "prettier --check ./src",
-    "lint": "eslint ./src",
+    "lint": "eslint .",
     "lint.css": "stylelint \"src/**/*.{css,scss}\"",
     "typecheck": "tsc --noEmit",
     "check": "concurrently -g \"pnpm:fmt.check\" \"pnpm:lint\" \"pnpm:lint.css\" \"pnpm:typecheck\"",

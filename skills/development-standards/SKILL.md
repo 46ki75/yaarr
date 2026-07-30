@@ -19,13 +19,16 @@ description: >
 license: MIT
 metadata:
   author: "Ikuma Yamashita"
-  version: "0.7.0"
+  version: "0.8.0"
 ---
 
 # Development Standards
 
 Org-internal engineering standards. This file is a **router** — load the
 reference that matches the task, not the whole tree.
+
+Refer to [`references/general/updating-skills.md`](references/general/updating-skills.md)
+before updating this or another Skill.
 
 ## Enforcement principle
 
@@ -54,6 +57,8 @@ bug.
 - `git-repository.md`: New repo setup, `.editorconfig`,
   `markdownlint-cli2`, pnpm, lefthook git hooks, Claude Code `PostToolUse`
   integration, and editor recommendations.
+- `updating-skills.md`: Updating Skills safely: policy ownership, cross-reference
+  audits, composable examples, evaluations, provenance, and validation.
 
 Commit-message conventions are not defined by this skill. Follow the current
 repository's contributor instructions, or upstream Conventional Commits when
@@ -77,8 +82,11 @@ the repository explicitly adopts it.
 ### TypeScript — `references/typescript/`
 
 - `general.md`: Any TypeScript project: `tsconfig.json` baseline, separate
-  configs for multi-context packages, inline type-only imports, and
-  ESLint/Prettier/Stylelint.
+  configs for multi-context packages, inline type-only imports, Prettier, and
+  Stylelint.
+- `eslint.md`: Any TypeScript ESLint setup or audit: flat config, typed linting,
+  strict rules, migration warnings, framework presets, Vitest rules,
+  exceptions, and quality-gate integration.
 
 ### Node.js — `references/nodejs/`
 
