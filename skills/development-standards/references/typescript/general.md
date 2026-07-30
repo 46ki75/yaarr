@@ -132,12 +132,12 @@ unrelated import statement.
 
 ## Lint and format
 
-- **ESLint**, flat config (`eslint.config.js`), built on `typescript-eslint`
-  `recommended` plus any framework-specific plugin's recommended config
-  (e.g. `eslint-plugin-qwik`, `eslint-plugin-react-hooks`). Use typed
-  linting via `parserOptions: { projectService: true, tsconfigRootDir:
-  import.meta.dirname }` — not a hand-pointed `project: "./tsconfig.json"`,
-  which breaks the moment a package gains a second tsconfig.
+- **ESLint**, flat config, built on `@eslint/js` recommended,
+  `typescript-eslint` recommended type-checked, the org strict baseline, and
+  any framework-specific plugin's recommended config (e.g.
+  `eslint-plugin-qwik`, `eslint-plugin-react-hooks`). Read
+  [`eslint.md`](eslint.md) for the required rules, typed parser setup, Vitest
+  policy, exceptions, and quality-gate integration.
 - **Prettier** for formatting. Default config — no `prettier.config.js`
   unless a project has a concrete reason to deviate, same philosophy as
   `ruff` defaults on the Python side. Expose `fmt` / `fmt.check` scripts
@@ -150,13 +150,8 @@ unrelated import statement.
   alongside ESLint+Prettier, not a replacement, until a repo actually
   migrates off both.
 
-```json
-{
-  "scripts": {
-    "fmt": "prettier --write ./src",
-    "fmt.check": "prettier --check ./src",
-    "lint": "eslint ./src",
-    "lint.css": "stylelint \"src/**/*.{css,scss}\""
-  }
-}
-```
+Expose these tools through package-level leaf commands. ESLint covers every
+maintained TypeScript context rather than only `src`; read
+[`eslint.md`](eslint.md) for its coverage policy. Package-script names and
+quality-gate composition belong to
+[`../nodejs/general.md`](../nodejs/general.md).
