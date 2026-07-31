@@ -5,10 +5,10 @@ description: >
   executable quality gates, validation or generation scripts, CI, bug
   investigation or fixes, regression tests, or configuration of `Cargo.toml`,
   `rust-toolchain.toml`, `justfile`, `.editorconfig`,
-  `.markdownlint-cli2.yaml`, `tsconfig.json`, `package.json`,
+  `.prettierignore`, `tsconfig.json`, `package.json`,
   `pnpm-lock.yaml`, `bunfig.toml`, `pyproject.toml`, `uv.lock`,
   `.python-version`, `lefthook.yml`, or `*.tf`. Also for `axum`,
-  `utoipa`, `async-graphql`, `markdownlint-cli2`, `uv`, `ruff`,
+  `utoipa`, `async-graphql`, `uv`, `ruff`,
   `pyright`, `pytest`, `eslint`, `prettier`, or Node package-manager
   setup (pnpm is the org default). Fully documented: Rust (workspace
   inheritance, MSRV, `just`, coverage, test tiers, Axum+utoipa,
@@ -19,7 +19,7 @@ description: >
 license: MIT
 metadata:
   author: "Ikuma Yamashita"
-  version: "0.8.0"
+  version: "0.9.0"
 ---
 
 # Development Standards
@@ -54,9 +54,9 @@ bug.
 - `executable-quality.md`: Quality gates, validation and generation scripts,
   bug investigation and fixes, contract tests, generated-file or metadata
   drift, safe automation, and evaluation of stochastic systems.
-- `git-repository.md`: New repo setup, `.editorconfig`,
-  `markdownlint-cli2`, pnpm, lefthook git hooks, Claude Code `PostToolUse`
-  integration, and editor recommendations.
+- `git-repository.md`: New repo setup, `.editorconfig`, repository-wide
+  Prettier formatting, pnpm, lefthook git hooks, and Claude Code `PostToolUse`
+  integration.
 - `updating-skills.md`: Updating Skills safely: policy ownership, cross-reference
   audits, composable examples, evaluations, provenance, and validation.
 
