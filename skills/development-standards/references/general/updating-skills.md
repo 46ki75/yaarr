@@ -103,14 +103,14 @@ the repository, including:
 ```sh
 SKILL_PATH=skills/development-standards
 git diff --check
-pnpm run lint
+pnpm fmt.check
 cargo run -p skill-cli -- check
 python .agents/skills/skill-creator/scripts/quick_validate.py "$SKILL_PATH"
 ```
 
 Also parse changed eval JSON and inspect the complete diff, including untracked
 references. Validation should confirm both document shape and policy coherence;
-a passing Markdown linter cannot detect contradictory examples or competing
+a passing formatter check cannot detect contradictory examples or competing
 sources of truth.
 
 Before finishing, confirm:

@@ -61,6 +61,19 @@
         "Rejects globally disabling baseline unsafe-boundary warnings merely to obtain clean output.",
         "Identifies incomplete package CI coverage and recommends one shared baseline consumed by every independently linted package."
       ]
+    },
+    {
+      "id": 6,
+      "prompt": "Set up formatting for a new Rust repository that contains maintained Markdown documentation and generated API docs. Apply our development standard, including package scripts, exclusions, hooks, and CI.",
+      "expected_output": "The agent configures root-owned Prettier with default settings, repository-wide fmt and fmt.check scripts, narrow exclusions for generated documentation and other unowned files, write-mode local hooks, and a non-mutating CI check. It uses pnpm for the Node-based tooling and does not add a separate Markdown linter.",
+      "files": [],
+      "assertions": [
+        "Uses Prettier with default configuration and pnpm even though the repository's primary language is Rust.",
+        "Defines root fmt and fmt.check scripts that run Prettier across the repository rather than only a hand-picked Markdown directory.",
+        "Excludes generated API documentation with a narrow .prettierignore pattern while leaving maintained Markdown in scope.",
+        "Runs write mode in local hooks and non-mutating check mode in CI.",
+        "Does not install or recommend a separate Markdown linter."
+      ]
     }
   ]
 }

@@ -5,7 +5,7 @@
 - [EditorConfig](#create-editorconfig)
 - [Package manager](#package-manager-pnpm)
 - [Git hooks](#git-hooks-lefthook)
-- [Markdown linting](#markdown-linting-with-markdownlint-cli2)
+- [Repository formatting](#repository-formatting-with-prettier)
 
 ## Create `.editorconfig`
 
@@ -24,7 +24,7 @@ insert_final_newline = true
 
 Use pnpm for anything Node-based — including repos whose primary
 language is not JavaScript but which carry Node tooling (e.g.
-`markdownlint-cli2` in a Rust repo). This is org policy; do not switch
+Prettier in a Rust repo). This is org policy; do not switch
 to npm or yarn because a repo happens to have their artifacts lying
 around.
 
@@ -68,9 +68,10 @@ pre-commit:
       glob: "**/*.rs"
       run: cargo fmt -- {staged_files}
       stage_fixed: true
-    - name: markdownlint
+    - name: prettier
       glob: "*.md"
-      run: pnpm exec markdownlint-cli2 --fix {staged_files}
+      run: pnpm exec prettier --write {staged_files}
+      stage_fixed: true
     - name: terraform-fmt
       glob: "**/*.tf"
       run: terraform fmt {staged_files}
@@ -113,7 +114,7 @@ Pick the template by where the file list actually comes from:
   anything invoked via `lefthook run <group> --file <path>` or
   `--all-files`) use `{files}`. The caller supplies the list; the
   `--file`/`--all-files` flags force-substitute it into whatever template
-  the job uses, so `{staged_files}` would *work* there, but it claims a
+  the job uses, so `{staged_files}` would _work_ there, but it claims a
   data source that isn't real. `{files}` also has the safer fallback: with
   no `files:` command and no `--file` flag, the list is empty and every
   job skips, whereas a bare `lefthook run` of a `{staged_files}` group
@@ -141,9 +142,9 @@ claude-check:
     - name: ruff-check
       glob: "*.py"
       run: uv run ruff check --fix {files}
-    - name: markdownlint
+    - name: prettier
       glob: "*.md"
-      run: pnpm exec markdownlint-cli2 {files}
+      run: pnpm exec prettier --write {files}
 ```
 
 **2. `.claude/settings.json`** — a `PostToolUse` hook on `Edit|Write`:
@@ -209,115 +210,72 @@ Behavioral notes, each load-bearing:
   `.claude/settings.json` takes effect in new sessions (or after `/hooks`
   review in the current one).
 
-## Markdown linting with `markdownlint-cli2`
+## Repository formatting with Prettier
 
-Every repository that contains Markdown should lint it with
-[`markdownlint-cli2`](https://github.com/DavidAnson/markdownlint-cli2).
-Use the config and `package.json` shape below — do not improvise rule
-sets per repo.
+Use [Prettier](https://prettier.io/) to format repository-owned Markdown and
+other file types it supports. Prettier is a formatter, not a Markdown linter;
+the org does not require separate Markdown structure or style rules.
 
-### `.markdownlint-cli2.yaml`
+Use Prettier's default configuration. Do not add a configuration file unless
+the repository has a concrete reason to deviate. In particular, the default
+`proseWrap: "preserve"` avoids noisy reflow of prose that contributors or
+upstream sources intentionally wrapped differently.
 
-Place at the repository root. **YAML, not JSONC** — `.markdownlint-cli2.jsonc`
-with only an `ignores` array (no `MD013`/`MD024`/`MD029` block) is a drift
-pattern seen in some org repos, not an accepted alternative. A bare-defaults
-config means 80-character line wrapping and default list/heading rules,
-which is not what this org has decided on. If you find a `.jsonc` config
-with no rule overrides in a repo, that repo is out of compliance — bring it
-to `.yaml` with the block below rather than treating the `.jsonc` file as
-precedent.
+### `.prettierignore`
 
-```yaml
-config:
-  MD013:
-    line_length: 200
-    tables: false
-    code_blocks: false
-  MD024:
-    siblings_only: true
-  MD029:
-    style: ordered
-ignores:
-  - "**/node_modules/**"
+Keep the formatting target broad and exclude files that the repository does not
+own. Add project-specific paths for vendored or generated files, submodules,
+build output, and local scratch data. For example:
+
+```gitignore
+node_modules
+submodules
+target
+refs
+notes
+**/*-workspace
 ```
 
-Rule choices, and why:
-
-- **MD013 (line length) → 200, tables/code blocks exempt.** Long URLs,
-  command examples, and tables routinely exceed the default 80. A hard
-  wrap there hurts readability more than it helps. 200 is generous
-  enough that real prose still gets flagged.
-- **MD024 (no duplicate headings) → `siblings_only: true`.** Repeated
-  headings under different parents (e.g. `## Install` appearing under
-  multiple OS sections) are legitimate. Only flag duplicates at the
-  same level.
-- **MD029 (ordered list prefix) → `ordered`.** Use `1.`, `2.`, `3.`
-  literally — never the `1.`, `1.`, `1.` lazy style. The rendered
-  output is the same, but the source stays diff-friendly and human-
-  readable.
-
-### `ignores`
-
-Add globs for anything the linter should not touch. Common entries:
-
-| Path                  | Reason                                                                      |
-| --------------------- | --------------------------------------------------------------------------- |
-| `**/node_modules/**`  | Third-party packages.                                                       |
-| `./submodules/**`     | Git submodules — upstream owns their lint rules.                            |
-| `./target/**`         | Rust build output.                                                          |
-| `./.claude/**`        | Agent-generated transcripts and worktrees.                                  |
-| `./refs/`, `./notes/` | Local-only scratch / reference material, if the repo uses such conventions. |
-
-Vendored or generated Markdown (third-party docs copied in, generated
-API docs) should also be ignored — fix it upstream, not here.
+Do not ignore a maintained documentation or source directory merely because it
+contains many files. If generated or vendored files share a directory with
+maintained files, use the narrowest stable patterns that separate them.
 
 ### `package.json`
 
-Pin `markdownlint-cli2` as a dev dependency and expose a `lint` script:
+Declare Prettier as a root development dependency and expose repository-wide
+write and check commands:
 
 ```json
 {
   "packageManager": "pnpm@11.13.0",
   "scripts": {
-    "lint": "markdownlint-cli2 \"**/*.md\""
+    "fmt": "prettier --write .",
+    "fmt.check": "prettier --check ."
   },
   "devDependencies": {
-    "markdownlint-cli2": "^0.22.1"
+    "prettier": "^3.8.3"
   }
 }
 ```
 
-(Pin `packageManager` to the current approved pnpm release — the field requires
-an exact version.)
+Pin `packageManager` to the current approved pnpm release; the field requires an
+exact version. Use the current approved Prettier release when creating a repo
+rather than copying the example version indefinitely.
 
-The glob in the script is the lint **target**; `ignores` in the YAML
-is the exclusion list. Keep both — narrowing the glob to skip a
-directory hides the file from `--fix` runs too.
+If a single-package TypeScript repository already has these scripts, widen its
+Prettier target to `.` rather than defining a second Markdown-only formatter. In
+a monorepo, own these repository-wide scripts at the root and run Prettier once;
+do not duplicate the same formatting pass in every workspace package.
 
-### Running
+### Running and enforcement
 
 ```bash
-pnpm lint              # or, in Bun projects: bun run lint
-pnpm exec markdownlint-cli2 --fix "**/*.md"   # auto-fix where possible
+pnpm fmt
+pnpm fmt.check
 ```
 
-Wire `pnpm lint` into CI (after `pnpm install --frozen-lockfile`) so
-Markdown regressions fail the build the same way code-lint regressions
-do. This step is commonly skipped in practice — several org repos enforce
-markdown lint only through the editor extension below, with no CI job at
-all, which means a contributor who ignores editor diagnostics can merge
-unlinted Markdown. Don't copy that gap into a new repo.
-
-### Editor integration
-
-Recommend the VS Code extension
-[`DavidAnson.vscode-markdownlint`](https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint).
-It reads the same `.markdownlint-cli2.yaml`, so editor diagnostics
-match CI output exactly. Add it to `.vscode/extensions.json` under
-`recommendations` so contributors get prompted on first open:
-
-```json
-{
-  "recommendations": ["DavidAnson.vscode-markdownlint"]
-}
-```
+Run `fmt` in pre-commit and edit-time hooks so routine differences are repaired
+automatically. Run `fmt.check` in CI after `pnpm install --frozen-lockfile` so CI
+remains authoritative without modifying the checkout. A repository that only
+formats through an editor can still merge unformatted files, so editor
+format-on-save is a convenience rather than the quality gate.

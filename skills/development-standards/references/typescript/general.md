@@ -138,10 +138,11 @@ unrelated import statement.
   `eslint-plugin-qwik`, `eslint-plugin-react-hooks`). Read
   [`eslint.md`](eslint.md) for the required rules, typed parser setup, Vitest
   policy, exceptions, and quality-gate integration.
-- **Prettier** for formatting. Default config — no `prettier.config.js`
-  unless a project has a concrete reason to deviate, same philosophy as
-  `ruff` defaults on the Python side. Expose `fmt` / `fmt.check` scripts
-  (see `references/nodejs/general.md` for the naming convention).
+- **Prettier** for formatting. The repository-wide configuration, scripts,
+  exclusions, and enforcement policy live in
+  [`../general/git-repository.md`](../general/git-repository.md). In a
+  single-package repo, the same `fmt` / `fmt.check` commands cover source and
+  Markdown; a monorepo runs Prettier once from the root.
 - **Stylelint** for CSS/SCSS, kept separate from ESLint rather than folded
   into it, whenever a package ships stylesheets. `stylelint-config-standard-scss`
   is the observed base config.

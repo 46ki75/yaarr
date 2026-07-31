@@ -1,9 +1,11 @@
 # Node.js Generic Development Standards
 
-Org-wide runtime-level convention for Node projects. Language-level
-TypeScript conventions (tsconfig, lint/format tooling) live in
-[`references/typescript/general.md`](../typescript/general.md); this file
-covers `package.json` shape, scripts, and CI.
+Org-wide runtime-level convention for Node projects. Language-level TypeScript
+conventions (tsconfig and lint tooling) live in
+[`references/typescript/general.md`](../typescript/general.md), and the
+repository-wide Prettier policy lives in
+[`references/general/git-repository.md`](../general/git-repository.md). This
+file covers `package.json` shape, scripts, and CI.
 
 Package manager is pnpm — see `references/general/git-repository.md` for
 the org-wide pnpm mandate and the Bun exception.
@@ -14,14 +16,14 @@ Name script variants of the same task with a `.` separator
 (`verb.variant`), not a `-` or camelCase suffix. This is the single most
 consistent convention across every audited package:
 
-| Script | Purpose |
-| --- | --- |
-| `fmt` / `fmt.check` | Prettier write / check |
-| `lint` / `lint.css` | ESLint / Stylelint |
-| `build` / `build.client` / `build.server` / `build.types` | split build phases |
-| `test.unit` / `test.browser` / `test.coverage` | test tiers (see below) |
-| `check` | fast local gate — lint + typecheck + format-check |
-| `check.ci` | full gate — `check` plus the full test suite |
+| Script                                                    | Purpose                                           |
+| --------------------------------------------------------- | ------------------------------------------------- |
+| `fmt` / `fmt.check`                                       | Prettier write / check                            |
+| `lint` / `lint.css`                                       | ESLint / Stylelint                                |
+| `build` / `build.client` / `build.server` / `build.types` | split build phases                                |
+| `test.unit` / `test.browser` / `test.coverage`            | test tiers (see below)                            |
+| `check`                                                   | fast local gate — lint + typecheck + format-check |
+| `check.ci`                                                | full gate — `check` plus the full test suite      |
 
 Compose the gate scripts with [`concurrently`](https://www.npmjs.com/package/concurrently)
 run in parallel-with-grouped-output mode, not a `&&` chain — a failing step
@@ -31,8 +33,8 @@ failure:
 ```json
 {
   "scripts": {
-    "fmt": "prettier --write ./src",
-    "fmt.check": "prettier --check ./src",
+    "fmt": "prettier --write .",
+    "fmt.check": "prettier --check .",
     "lint": "eslint .",
     "lint.css": "stylelint \"src/**/*.{css,scss}\"",
     "typecheck": "tsc --noEmit",
@@ -58,7 +60,8 @@ For a published TypeScript package, define `build.types` as documented in
   (`pnpm --filter <pkg> <script>`, `pnpm run --recursive check`), not a
   hand-rolled root script that re-lists every package. Add a root script
   only for something that's genuinely repo-wide and not package-shaped
-  (e.g. the markdownlint `lint` script from `git-repository.md`).
+  (e.g. the Prettier `fmt` / `fmt.check` scripts from
+  `git-repository.md`).
 - **`engines` is declared only on packages that are actually published or
   deployed**, not on internal/private workspace members — an internal
   package inherits whatever Node version CI and contributors already use,
@@ -140,7 +143,7 @@ jobs:
 
 This is the target shape. It is not universally implemented yet — at least
 one audited org repo's only Rust-adjacent CI workflow silently no-ops its
-test step, and markdown/format checks in several repos run only through
+test step, and format checks in several repos run only through
 editor extensions with no CI job at all. Wire the jobs above for real when
 setting up a new repo rather than treating an existing repo's CI as proof
 the gap is acceptable.
