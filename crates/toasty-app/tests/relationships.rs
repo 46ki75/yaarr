@@ -70,7 +70,7 @@ async fn has_many_remove_unlinks_a_child() -> toasty::Result<()> {
     assert_eq!(todos.len(), 2);
 
     let doomed = todos.iter().find(|t| t.title == "drop").unwrap();
-    user.todos().remove(&mut db, doomed).await?;
+    user.todos().remove(doomed).exec(&mut db).await?;
 
     let remaining = user.todos().exec(&mut db).await?;
     assert_eq!(remaining.len(), 1);
